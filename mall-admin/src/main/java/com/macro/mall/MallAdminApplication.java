@@ -13,6 +13,9 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableDiscoveryClient
 @SpringBootApplication
 public class MallAdminApplication {
+    private void health(){
+        System.out.println("git test");
+    }
     public static void main(String[] args) {
         SpringApplication.run(MallAdminApplication.class, args);
     }
