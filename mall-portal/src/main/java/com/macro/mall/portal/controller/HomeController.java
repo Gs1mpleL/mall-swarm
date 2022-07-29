@@ -26,8 +26,6 @@ import java.util.List;
 public class HomeController {
     @Autowired
     private HomeService homeService;
-    @Autowired
-    private RedisService redisService;
 
     @ApiOperation("首页内容页信息展示")
     @RequestMapping(value = "/content", method = RequestMethod.GET)

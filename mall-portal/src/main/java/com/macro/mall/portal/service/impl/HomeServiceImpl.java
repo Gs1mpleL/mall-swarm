@@ -15,6 +15,7 @@ import com.macro.mall.portal.domain.SignDayRes;
 import com.macro.mall.portal.service.HomeService;
 import com.macro.mall.portal.service.UmsMemberService;
 import com.macro.mall.portal.util.DateUtil;
+import com.macro.mall.portal.util.UserUtils;
 import org.apache.http.client.utils.DateUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -193,7 +194,7 @@ public class HomeServiceImpl implements HomeService {
 
     @Override
     public SignDayRes signDay() {
-        UmsMember member = memberService.getCurrentMember();
+        UmsMember member = UserUtils.getUserDetail();
         String key = "mall:portal:signDay:%s:%s";
         String finalKey = String.format(key, member.getId(), DateUtils.formatDate(new Date(), "yyyy-MM"));
         int day = DateTime.now().dayOfMonth();
