@@ -4,6 +4,7 @@ import com.macro.mall.model.CmsSubject;
 import com.macro.mall.model.PmsProduct;
 import com.macro.mall.model.PmsProductCategory;
 import com.macro.mall.portal.domain.HomeContentResult;
+import com.macro.mall.portal.domain.SignDayRes;
 
 import java.util.List;
 
@@ -44,4 +45,10 @@ public interface HomeService {
      * 分页获取新品推荐商品
      */
     List<PmsProduct> newProductList(Integer pageNum, Integer pageSize);
+
+    /**
+     * 用户每日签到
+     * @return
+     */
+    SignDayRes signDay();
 }

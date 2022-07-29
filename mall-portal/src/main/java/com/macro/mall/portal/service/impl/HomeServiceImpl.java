@@ -1,18 +1,28 @@
 package com.macro.mall.portal.service.impl;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.util.BooleanUtil;
 import com.github.pagehelper.PageHelper;
+import com.macro.mall.common.exception.ApiException;
+import com.macro.mall.common.service.RedisService;
 import com.macro.mall.mapper.*;
 import com.macro.mall.model.*;
 import com.macro.mall.portal.dao.HomeDao;
 import com.macro.mall.portal.domain.FlashPromotionProduct;
 import com.macro.mall.portal.domain.HomeContentResult;
 import com.macro.mall.portal.domain.HomeFlashPromotion;
+import com.macro.mall.portal.domain.SignDayRes;
 import com.macro.mall.portal.service.HomeService;
+import com.macro.mall.portal.service.UmsMemberService;
 import com.macro.mall.portal.util.DateUtil;
+import org.apache.http.client.utils.DateUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +46,10 @@ public class HomeServiceImpl implements HomeService {
     private PmsProductCategoryMapper productCategoryMapper;
     @Autowired
     private CmsSubjectMapper subjectMapper;
+    @Autowired
+    private UmsMemberService memberService;
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public HomeContentResult content() {
@@ -126,6 +140,7 @@ public class HomeServiceImpl implements HomeService {
     }
 
     //获取下一个场次信息
+
     private SmsFlashPromotionSession getNextFlashPromotionSession(Date date) {
         SmsFlashPromotionSessionExample sessionExample = new SmsFlashPromotionSessionExample();
         sessionExample.createCriteria()
@@ -137,7 +152,6 @@ public class HomeServiceImpl implements HomeService {
         }
         return null;
     }
-
     private List<SmsHomeAdvertise> getHomeAdvertiseList() {
         SmsHomeAdvertiseExample example = new SmsHomeAdvertiseExample();
         example.createCriteria().andTypeEqualTo(1).andStatusEqualTo(1);
@@ -146,6 +160,7 @@ public class HomeServiceImpl implements HomeService {
     }
 
     //根据时间获取秒杀活动
+
     private SmsFlashPromotion getFlashPromotion(Date date) {
         Date currDate = DateUtil.getDate(date);
         SmsFlashPromotionExample example = new SmsFlashPromotionExample();
@@ -159,8 +174,8 @@ public class HomeServiceImpl implements HomeService {
         }
         return null;
     }
-
     //根据时间获取秒杀场次
+
     private SmsFlashPromotionSession getFlashPromotionSession(Date date) {
         Date currTime = DateUtil.getTime(date);
         SmsFlashPromotionSessionExample sessionExample = new SmsFlashPromotionSessionExample();
@@ -172,5 +187,52 @@ public class HomeServiceImpl implements HomeService {
             return promotionSessionList.get(0);
         }
         return null;
+    }
+
+    @Override
+    public SignDayRes signDay() {
+        UmsMember member = memberService.getCurrentMember();
+        String key = "mall:portal:signDay:%s:%s";
+        String finalKey = String.format(key, member.getId(), DateUtils.formatDate(new Date(), "yyyy-MM"));
+        int day = DateTime.now().dayOfMonth();
+        if (redisService.bitGet(finalKey, day)) {
+            return mapSignDayRes(finalKey,day,"已经签到过了");
+        }
+        Boolean oldValue = redisService.bitSet(finalKey, day, true);
+        // 上述方法返回是该位置的旧value
+        if (BooleanUtil.isTrue(oldValue)) {
+            throw new ApiException("签到失败");
+        }
+        return mapSignDayRes(finalKey, day,"签到成功");
+    }
+
+    /**
+     * 封装签到返回信息
+     */
+    @NotNull
+    private SignDayRes mapSignDayRes(String finalKey, int day,String msg) {
+        SignDayRes signDayRes = new SignDayRes();
+        // 返回msg
+        signDayRes.setMsg(msg);
+        // 签到计数
+        signDayRes.setAllCount(Math.toIntExact(redisService.bitCount(finalKey)));
+        // 签到位图
+        String bitStr = redisService.getBitStr(finalKey, day);
+        signDayRes.setCountMap(bitStr);
+        // 连续签到
+        int tmpCount = 0;
+        int maxCount = 0;
+        byte[] bytes = bitStr.getBytes();
+        for (int i = bitStr.length() - 1; i >= 0; i--) {
+            if (bytes[i] == '1'){
+                tmpCount++;
+                maxCount = Math.max(maxCount,tmpCount);
+            }else{
+                maxCount = Math.max(maxCount,tmpCount);
+                tmpCount = 0;
+            }
+        }
+        signDayRes.setMaxContinuityCount(maxCount);
+        return signDayRes;
     }
 }

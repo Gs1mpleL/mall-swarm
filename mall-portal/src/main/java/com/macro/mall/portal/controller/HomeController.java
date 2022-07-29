@@ -1,10 +1,12 @@
 package com.macro.mall.portal.controller;
 
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.service.RedisService;
 import com.macro.mall.model.CmsSubject;
 import com.macro.mall.model.PmsProduct;
 import com.macro.mall.model.PmsProductCategory;
 import com.macro.mall.portal.domain.HomeContentResult;
+import com.macro.mall.portal.domain.SignDayRes;
 import com.macro.mall.portal.service.HomeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -18,12 +20,14 @@ import java.util.List;
  * 首页内容管理Controller
  * Created by macro on 2019/1/28.
  */
-@Controller
+@RestController
 @Api(tags = "HomeController", description = "首页内容管理")
 @RequestMapping("/home")
 public class HomeController {
     @Autowired
     private HomeService homeService;
+    @Autowired
+    private RedisService redisService;
 
     @ApiOperation("首页内容页信息展示")
     @RequestMapping(value = "/content", method = RequestMethod.GET)
@@ -77,4 +81,13 @@ public class HomeController {
         List<PmsProduct> productList = homeService.newProductList(pageNum,pageSize);
         return CommonResult.success(productList);
     }
+
+    @ApiOperation("每日签到")
+    @GetMapping("/signDay")
+    public CommonResult<SignDayRes> signDay(){
+        return CommonResult.success(homeService.signDay());
+    }
+
+
+
 }

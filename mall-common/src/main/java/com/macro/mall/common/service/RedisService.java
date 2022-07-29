@@ -1,5 +1,7 @@
 package com.macro.mall.common.service;
 
+import io.swagger.models.auth.In;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -179,4 +181,23 @@ public interface RedisService {
      * 从List结构中移除属性
      */
     Long lRemove(String key, long count, Object value);
+
+    /**
+     * 在位图中添加元素
+     */
+    Boolean bitSet(String key, long index, boolean bit);
+
+    /**
+     * 获取位图计数
+     */
+    Long bitCount(String key);
+    /**
+     * 判断位图点位是否存在
+     */
+    Boolean bitGet(String key, long index);
+
+    /**
+     * 获取用Str表示的bitmap
+     */
+    String getBitStr(String key, Integer index);
 }

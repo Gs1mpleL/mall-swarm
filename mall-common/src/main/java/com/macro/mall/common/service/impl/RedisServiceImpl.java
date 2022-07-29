@@ -1,14 +1,22 @@
 package com.macro.mall.common.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.macro.mall.common.service.RedisService;
+import io.netty.util.internal.StringUtil;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.BitFieldSubCommands;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * redis操作实现类
@@ -195,4 +203,33 @@ public class RedisServiceImpl implements RedisService {
     public Long lRemove(String key, long count, Object value) {
         return redisTemplate.opsForList().remove(key, count, value);
     }
+
+    @Override
+    public Boolean bitSet(String key, long index, boolean bit) {
+        return redisTemplate.opsForValue().setBit(key,index,bit);
+    }
+
+    @Override
+    public Long bitCount(String key) {
+        return redisTemplate.execute((RedisCallback<Long>) con->con.bitCount(key.getBytes()));
+    }
+
+    @Override
+    public Boolean bitGet(String key, long index) {
+        return redisTemplate.opsForValue().getBit(key,index);
+    }
+
+    @Override
+    public String getBitStr(String key, Integer index) {
+        BitFieldSubCommands command = BitFieldSubCommands.create().get(BitFieldSubCommands.BitFieldType.unsigned(index+1)).valueAt(0);
+        // 获取用户从当前日期开始到 1 号的所有签到状态
+        List<Long> data = redisTemplate.opsForValue().bitField(key, command);
+        Long num = data.get(0);
+        if (num == null || num == 0){
+            return null;
+        }
+        return Long.toBinaryString(num);
+    }
+
+
 }
