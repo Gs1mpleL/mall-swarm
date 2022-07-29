@@ -22,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -217,9 +219,8 @@ public class HomeServiceImpl implements HomeService {
         // 签到计数
         signDayRes.setAllCount(Math.toIntExact(redisService.bitCount(finalKey)));
         // 签到位图
-        String bitStr = redisService.getBitStr(finalKey, day);
-        signDayRes.setCountMap(bitStr);
-        // 连续签到
+        String bitStr = mapBitMapAllMonth(finalKey, day, signDayRes);
+        // 连续签到次数
         int tmpCount = 0;
         int maxCount = 0;
         byte[] bytes = bitStr.getBytes();
@@ -234,5 +235,30 @@ public class HomeServiceImpl implements HomeService {
         }
         signDayRes.setMaxContinuityCount(maxCount);
         return signDayRes;
+    }
+
+    @NotNull
+    private String mapBitMapAllMonth(String finalKey, int day, SignDayRes signDayRes) {
+        // 获取日历对象
+        Calendar c = Calendar.getInstance();
+        // 设置日历对象为指定年月日，为指定月份的第一天
+        c.set(LocalDate.now().getYear(), LocalDate.now().getMonthValue(), 1);
+        // 设置日历对象，指定月份往前推一天，也就是最后一天
+        c.add(Calendar.DATE, -1);
+        // 获取本月有多少天
+        int allDay = c.get(Calendar.DATE);
+        String bitStr = redisService.getBitStr(finalKey, day);
+        int bitLength = bitStr.length();
+        int zeroFill = day - bitLength;
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < zeroFill; i++) {
+            stringBuilder.append("0");
+        }
+        stringBuilder.append(bitStr);
+        for (int i = 0; i < allDay- day; i++) {
+            stringBuilder.append("0");
+        }
+        signDayRes.setCountMap(stringBuilder.toString());
+        return bitStr;
     }
 }
