@@ -3,6 +3,7 @@ package com.macro.mall.filter;
 import cn.hutool.core.util.StrUtil;
 import com.macro.mall.common.constant.AuthConstant;
 import com.nimbusds.jose.JWSObject;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -20,13 +21,16 @@ import java.text.ParseException;
  * Created by macro on 2020/6/17.
  */
 @Component
+@Slf4j
 public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
     private static Logger LOGGER = LoggerFactory.getLogger(AuthGlobalFilter.class);
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        log.info("AuthGlobalFilter拦截开始");
         String token = exchange.getRequest().getHeaders().getFirst(AuthConstant.JWT_TOKEN_HEADER);
+        log.info("请求携带的token->[{}]",token);
         if (StrUtil.isEmpty(token)) {
             return chain.filter(exchange);
         }

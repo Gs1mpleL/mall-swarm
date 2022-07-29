@@ -7,6 +7,7 @@ import com.macro.mall.common.constant.AuthConstant;
 import com.macro.mall.common.domain.UserDto;
 import com.macro.mall.config.IgnoreUrlsConfig;
 import com.nimbusds.jose.JWSObject;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
  * Created by macro on 2020/6/19.
  */
 @Component
+@Slf4j
 public class AuthorizationManager implements ReactiveAuthorizationManager<AuthorizationContext> {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -66,6 +68,7 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
             JWSObject jwsObject = JWSObject.parse(realToken);
             String userStr = jwsObject.getPayload().toString();
             UserDto userDto = JSONUtil.toBean(userStr, UserDto.class);
+            log.info("从token中解析出用户信息->[{}]",userDto);
             if (AuthConstant.ADMIN_CLIENT_ID.equals(userDto.getClientId()) && !pathMatcher.match(AuthConstant.ADMIN_URL_PATTERN, uri.getPath())) {
                 return Mono.just(new AuthorizationDecision(false));
             }

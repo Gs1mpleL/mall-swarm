@@ -6,6 +6,7 @@ import com.macro.mall.auth.service.UmsAdminService;
 import com.macro.mall.auth.service.UmsMemberService;
 import com.macro.mall.common.constant.AuthConstant;
 import com.macro.mall.common.domain.UserDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.CredentialsExpiredException;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
  * Created by macro on 2020/6/19.
  */
 @Service
+@Slf4j
 public class UserServiceImpl implements UserDetailsService {
 
     @Autowired
@@ -36,6 +38,7 @@ public class UserServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String clientId = request.getParameter("client_id");
         UserDto userDto;
+        log.info("登陆的client [{}]",clientId);
         if(AuthConstant.ADMIN_CLIENT_ID.equals(clientId)){
             userDto = adminService.loadUserByUsername(username);
         }else{
