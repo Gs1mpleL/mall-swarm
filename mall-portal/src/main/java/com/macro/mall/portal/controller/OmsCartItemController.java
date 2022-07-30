@@ -55,7 +55,7 @@ public class OmsCartItemController {
     }
 
     @ApiOperation("修改购物车中某个商品的数量")
-    @RequestMapping(value = "/update/quantity", method = RequestMethod.GET)
+    @RequestMapping(value = "/update/quantity", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult updateQuantity(@RequestParam Long id,
                                        @RequestParam Integer quantity) {
@@ -100,7 +100,7 @@ public class OmsCartItemController {
     @RequestMapping(value = "/clear", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult clear() {
-        int count = cartItemService.clear(memberService.getCurrentMember().getId());
+        int count = cartItemService.clear();
         if (count > 0) {
             return CommonResult.success(count);
         }

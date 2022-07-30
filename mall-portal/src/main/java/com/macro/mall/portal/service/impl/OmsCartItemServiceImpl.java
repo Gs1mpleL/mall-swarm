@@ -11,6 +11,7 @@ import com.macro.mall.portal.domain.CartPromotionItem;
 import com.macro.mall.portal.service.OmsCartItemService;
 import com.macro.mall.portal.service.OmsPromotionService;
 import com.macro.mall.portal.service.UmsMemberService;
+import com.macro.mall.portal.util.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -25,7 +26,6 @@ import java.util.stream.Collectors;
  * 购物车管理Service实现类
  * Created by macro on 2018/8/2.
  */
-@Service
 public class OmsCartItemServiceImpl implements OmsCartItemService {
     @Autowired
     private OmsCartItemMapper cartItemMapper;
@@ -33,13 +33,11 @@ public class OmsCartItemServiceImpl implements OmsCartItemService {
     private PortalProductDao productDao;
     @Autowired
     private OmsPromotionService promotionService;
-    @Autowired
-    private UmsMemberService memberService;
 
     @Override
     public int add(OmsCartItem cartItem) {
         int count;
-        UmsMember currentMember =memberService.getCurrentMember();
+        UmsMember currentMember = UserUtils.getUserDetail();
         cartItem.setMemberId(currentMember.getId());
         cartItem.setMemberNickname(currentMember.getNickname());
         cartItem.setDeleteStatus(0);
@@ -130,11 +128,11 @@ public class OmsCartItemServiceImpl implements OmsCartItemService {
     }
 
     @Override
-    public int clear(Long memberId) {
+    public int clear() {
         OmsCartItem record = new OmsCartItem();
         record.setDeleteStatus(1);
         OmsCartItemExample example = new OmsCartItemExample();
-        example.createCriteria().andMemberIdEqualTo(memberId);
+        example.createCriteria().andMemberIdEqualTo(UserUtils.getUserDetail().getId());
         return cartItemMapper.updateByExampleSelective(record,example);
     }
 }

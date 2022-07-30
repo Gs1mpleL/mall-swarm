@@ -52,5 +52,5 @@ public interface OmsCartItemService {
     /**
      * 清空购物车
      */
-    int clear(Long memberId);
+    int clear();
 }
