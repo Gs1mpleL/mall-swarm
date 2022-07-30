@@ -37,6 +37,11 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public boolean setIfAbs(String key, Object value,Long second) {
+        return Boolean.TRUE.equals(redisTemplate.opsForValue().setIfAbsent(key, value,second,TimeUnit.SECONDS));
+    }
+
+    @Override
     public Object get(String key) {
         return redisTemplate.opsForValue().get(key);
     }

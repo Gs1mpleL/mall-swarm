@@ -21,7 +21,10 @@ public interface RedisService {
      * 保存属性
      */
     void set(String key, Object value);
-
+    /**
+     * 保存如果不存在
+     */
+    boolean setIfAbs(String key,Object value,Long second);
     /**
      * 获取属性
      */
