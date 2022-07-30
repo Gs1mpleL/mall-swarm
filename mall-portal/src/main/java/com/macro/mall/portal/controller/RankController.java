@@ -1,6 +1,7 @@
 package com.macro.mall.portal.controller;
 
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.common.limit.RateLimit;
 import com.macro.mall.portal.service.RankService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ public class RankController {
     private RankService rankService;
 
 
+    @RateLimit(capacity = 10, time = 60)
     @GetMapping("/dayRank")
     public CommonResult getDayRank(){
         return CommonResult.success(rankService.getDayRank());

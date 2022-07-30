@@ -1,6 +1,7 @@
 package com.macro.mall.common.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
@@ -61,7 +62,27 @@ public class BaseRedisConfig {
         return new RedisCacheManager(redisCacheWriter, redisCacheConfiguration);
     }
 
-
+    /**
+     * redis限流器配置
+     */
+    @Bean(value = "redisLimiter")
+    public RedisTemplate redisLimiter(RedisConnectionFactory redisConnectionFactory){
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        //设置序列化方式，key设置string 方式，value设置成json
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+        Jackson2JsonRedisSerializer jsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+        jsonRedisSerializer.setObjectMapper(objectMapper);
+        template.setEnableDefaultSerializer(false);
+        template.setKeySerializer(stringRedisSerializer);
+        template.setHashKeySerializer(stringRedisSerializer);
+        template.setValueSerializer(jsonRedisSerializer);
+        template.setHashValueSerializer(jsonRedisSerializer);
+        return template;
+    }
     @Bean
     public RedisService redisService(){
         return new RedisServiceImpl();
