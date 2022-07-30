@@ -48,8 +48,11 @@ public class UserAspect {
             String id = jsonObject.getString("id");
             UmsMember userDetail = cacheService.getMember(Long.parseLong(id));
             if (userDetail == null){
+                log.info("从MySQL中获取用户信息");
                 userDetail = memberService.getById(Long.parseLong(id));
                 cacheService.setMember(userDetail);
+            }else {
+                log.info("从Redis中获取用户信息");
             }
             // 用户信息装入ThreadLocal
             UserUtils.setUserDetail(userDetail);
