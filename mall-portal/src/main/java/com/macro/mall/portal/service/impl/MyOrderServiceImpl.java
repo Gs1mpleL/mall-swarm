@@ -16,10 +16,8 @@ import com.macro.mall.portal.domain.OrderParam;
 import com.macro.mall.portal.service.OmsCartItemService;
 import com.macro.mall.portal.service.OmsPortalOrderService;
 import com.macro.mall.portal.util.UserUtils;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
-import io.netty.util.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -27,7 +25,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +46,7 @@ public class MyOrderServiceImpl implements OmsPortalOrderService {
     private CancelOrderSender cancelOrderSender;
     private static final String tokenKey = "mall:portal:orderGenToken:%s:%s";
     private static final String cartStr = "mall:portal:cart:%s";
+    private static final String rankStr = "mall:portal:rank:day:%s";
     @Override
     public ConfirmOrderResult generateConfirmOrder(List<Long> cartIds) {
         return null;
@@ -97,6 +95,9 @@ public class MyOrderServiceImpl implements OmsPortalOrderService {
             pay = pay.add(price);
         }
         omsOrder.setPayAmount(pay);
+        String formatDate = DateUtils.formatDate(new Date(), "yyyyMMdd");
+        String key = String.format(rankStr, formatDate);
+        redisService.zSet(key,UserUtils.getUserDetail().getId(),pay.doubleValue());
         omsOrder.setReceiverName("收货人");
         omsOrder.setReceiverPhone("18322126876");
         omsOrder.setDeleteStatus(0);
