@@ -23,4 +23,6 @@ public class OrderParam {
     private Integer payType;
     @ApiModelProperty("被选中的购物车商品ID")
     private List<Long> cartIds;
+    @ApiModelProperty("页面生成的唯一Token")
+    private String token;
 }
