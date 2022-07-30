@@ -36,6 +36,7 @@ public class BaseRedisConfig {
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(serializer);
         redisTemplate.afterPropertiesSet();
+        redisTemplate.setEnableTransactionSupport(true);
         return redisTemplate;
     }
 
