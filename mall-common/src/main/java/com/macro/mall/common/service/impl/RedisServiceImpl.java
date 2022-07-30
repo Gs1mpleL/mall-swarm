@@ -1,20 +1,19 @@
 package com.macro.mall.common.service.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.stream.CollectorUtil;
+import com.macro.mall.common.domain.RedisZSetVo;
 import com.macro.mall.common.service.RedisService;
-import io.netty.util.internal.StringUtil;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.BitFieldSubCommands;
-import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.util.CollectionUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -234,6 +233,36 @@ public class RedisServiceImpl implements RedisService {
             return null;
         }
         return Long.toBinaryString(num);
+    }
+
+    @Override
+    public Double zSet(String key, Object filed, Double score) {
+        return redisTemplate.opsForZSet().incrementScore(key,filed,score);
+    }
+
+
+    @Override
+    public List<RedisZSetVo> zGetTop(String key, Long top) {
+        Set<ZSetOperations.TypedTuple<Object>> typedTuples = redisTemplate.opsForZSet().reverseRangeWithScores(key, 0, top);
+        return typedTuples.stream().map(item -> {
+            RedisZSetVo redisZSetVo = new RedisZSetVo();
+            redisZSetVo.setKey(item.getValue());
+            redisZSetVo.setValue(item.getScore());
+            return redisZSetVo;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RedisZSetVo> zGetAllTop(List<String> keys, Long top) {
+        if (CollectionUtils.isEmpty(keys)) {
+            return null;
+        }
+        String originKey = keys.get(0);
+        keys.remove(0);
+        String destKey = "mall:portal:rank:week:%s";
+        String finalKey = String.format(destKey, DateUtil.format(new Date(), "yyyyMM"));
+        redisTemplate.opsForZSet().unionAndStore(originKey, keys,finalKey);
+        return zGetTop(finalKey, 30L);
     }
 
 

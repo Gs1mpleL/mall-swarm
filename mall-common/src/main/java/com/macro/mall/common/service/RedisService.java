@@ -1,6 +1,6 @@
 package com.macro.mall.common.service;
 
-import io.swagger.models.auth.In;
+import com.macro.mall.common.domain.RedisZSetVo;
 
 import java.util.List;
 import java.util.Map;
@@ -203,4 +203,19 @@ public interface RedisService {
      * 获取用Str表示的bitmap
      */
     String getBitStr(String key, Integer index);
+
+    /**
+     * zset放入数据
+     */
+    Double zSet(String key, Object filed, Double score);
+
+    /**
+     * zset获取排行前几位
+     */
+    List<RedisZSetVo> zGetTop(String key, Long top);
+
+    /**
+     * 根据多个zset获得总榜
+     */
+    List<RedisZSetVo> zGetAllTop(List<String> keys,Long top);
 }
