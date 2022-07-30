@@ -38,26 +38,32 @@ public class UserAspect {
 
     @Around("pointcut()")
     public Object doAround(ProceedingJoinPoint joinPoint) throws Throwable {
-        System.out.println("请求进入");
         //获取当前请求对象
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         // 在网关处已经将用户信息装入header 可以获取到用户的id
-        String user = request.getHeader(AuthConstant.USER_TOKEN_HEADER);
-        JSONObject jsonObject = JSONObject.parseObject(user);
-        String id = jsonObject.getString("id");
-        UmsMember userDetail = cacheService.getMember(Long.parseLong(id));
-        if (userDetail == null){
-             userDetail = memberService.getById(Long.parseLong(id));
-             cacheService.setMember(userDetail);
+        if (request.getHeader(AuthConstant.USER_TOKEN_HEADER) != null){
+            String user = request.getHeader(AuthConstant.USER_TOKEN_HEADER);
+            JSONObject jsonObject = JSONObject.parseObject(user);
+            String id = jsonObject.getString("id");
+            UmsMember userDetail = cacheService.getMember(Long.parseLong(id));
+            if (userDetail == null){
+                userDetail = memberService.getById(Long.parseLong(id));
+                cacheService.setMember(userDetail);
+            }
+            // 用户信息装入ThreadLocal
+            UserUtils.setUserDetail(userDetail);
+            log.info("用户信息放入ThreadLocal");
+            Object proceed = joinPoint.proceed();
+            log.info("请求结束");
+            UserUtils.removeUserDetail();
+            log.info("删除ThreadLocal中的用户信息");
+            return proceed;
         }
-        // 用户信息装入ThreadLocal
-        UserUtils.setUserDetail(userDetail);
-        log.info("用户信息放入ThreadLocal");
-        Object proceed = joinPoint.proceed();
-        log.info("请求结束");
-        UserUtils.removeUserDetail();
-        log.info("删除ThreadLocal中的用户信息");
-        return proceed;
+        else {
+            log.info("本次请求为未登陆状态");
+            return joinPoint.proceed();
+        }
+
     }
 }
