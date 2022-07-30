@@ -1,6 +1,7 @@
 package com.macro.mall.portal.service;
 
 import com.macro.mall.common.api.CommonPage;
+import com.macro.mall.model.OmsOrder;
 import com.macro.mall.portal.domain.ConfirmOrderResult;
 import com.macro.mall.portal.domain.OmsOrderDetail;
 import com.macro.mall.portal.domain.OrderParam;
@@ -24,7 +25,7 @@ public interface OmsPortalOrderService {
      * 根据提交信息生成订单
      */
     @Transactional
-    Map<String, Object> generateOrder(OrderParam orderParam);
+    OmsOrder generateOrder(OrderParam orderParam);
 
     /**
      * 支付成功后的回调

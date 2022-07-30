@@ -2,6 +2,7 @@ package com.macro.mall.portal.controller;
 
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.model.OmsOrder;
 import com.macro.mall.portal.domain.ConfirmOrderResult;
 import com.macro.mall.portal.domain.OmsOrderDetail;
 import com.macro.mall.portal.domain.OrderParam;
@@ -39,7 +40,7 @@ public class OmsPortalOrderController {
     @RequestMapping(value = "/generateOrder", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult generateOrder(@RequestBody OrderParam orderParam) {
-        Map<String, Object> result = portalOrderService.generateOrder(orderParam);
+        OmsOrder result = portalOrderService.generateOrder(orderParam);
         return CommonResult.success(result, "下单成功");
     }
 

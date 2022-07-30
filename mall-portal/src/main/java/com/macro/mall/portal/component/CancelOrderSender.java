@@ -26,10 +26,11 @@ public class CancelOrderSender {
             @Override
             public Message postProcessMessage(Message message) throws AmqpException {
                 //给消息设置延迟毫秒值
+                LOGGER.info("设置消息延迟时间 [{}s]",delayTimes/1000);
                 message.getMessageProperties().setExpiration(String.valueOf(delayTimes));
                 return message;
             }
         });
-        LOGGER.info("send orderId:{}",orderId);
+        LOGGER.info("发送延迟取消订单消息 id->{}",orderId);
     }
 }

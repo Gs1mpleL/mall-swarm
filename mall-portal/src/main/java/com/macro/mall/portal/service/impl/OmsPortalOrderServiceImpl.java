@@ -91,7 +91,7 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
     }
 
     @Override
-    public Map<String, Object> generateOrder(OrderParam orderParam) {
+    public OmsOrder generateOrder(OrderParam orderParam) {
         List<OmsOrderItem> orderItemList = new ArrayList<>();
         //获取购物车及优惠信息
         UmsMember currentMember = memberService.getCurrentMember();
@@ -237,9 +237,8 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
         //发送延迟消息取消订单
         sendDelayMessageCancelOrder(order.getId());
         Map<String, Object> result = new HashMap<>();
-        result.put("order", order);
-        result.put("orderItemList", orderItemList);
-        return result;
+
+        return new OmsOrder();
     }
 
     @Override
