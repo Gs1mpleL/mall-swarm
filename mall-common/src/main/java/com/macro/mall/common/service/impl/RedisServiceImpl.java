@@ -265,5 +265,10 @@ public class RedisServiceImpl implements RedisService {
         return zGetTop(finalKey, 30L);
     }
 
+    @Override
+    public void setWithMill(String key, String toJSONString, long expire) {
+        redisTemplate.opsForValue().set(key,toJSONString,expire,TimeUnit.MILLISECONDS);
+    }
+
 
 }

@@ -218,4 +218,6 @@ public interface RedisService {
      * 根据多个zset获得总榜
      */
     List<RedisZSetVo> zGetAllTop(List<String> keys,Long top);
+
+    void setWithMill(String key, String toJSONString, long expire);
 }
