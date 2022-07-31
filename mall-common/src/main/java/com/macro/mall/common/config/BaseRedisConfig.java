@@ -37,7 +37,8 @@ public class BaseRedisConfig {
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(serializer);
         redisTemplate.afterPropertiesSet();
-        redisTemplate.setEnableTransactionSupport(true);
+        // 开启事务后，Redis操作的返回都会变成null
+//        redisTemplate.setEnableTransactionSupport(true);
         return redisTemplate;
     }
 
