@@ -2,23 +2,14 @@ package com.macro.mall.common.limit;
 
 import com.macro.mall.common.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.data.redis.core.script.RedisScript;
-import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-@Component
 /**
  * @Description 限流工具类
  * @Author CJB
  * @Date 2020/3/19 17:21
  */
+@Component
 public class RedisLimiterUtils {
    @Autowired
    private RedisService redisService;
