@@ -2,6 +2,7 @@ package com.macro.mall.portal.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
+import com.macro.mall.common.config.TtlThreadPoolExecutor;
 import com.macro.mall.common.exception.ApiException;
 import com.macro.mall.common.service.RedisService;
 import com.macro.mall.mapper.PmsSkuStockMapper;
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -23,7 +25,9 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class SeckillServiceImpl implements SeckillService {
-
+    @Autowired
+    @Qualifier("ttlThreadExecutor")
+    private TtlThreadPoolExecutor ttlThreadPoolExecutor;
     @Autowired
     private RedisService redisService;
 
@@ -100,8 +104,19 @@ public class SeckillServiceImpl implements SeckillService {
         }
         log.info("秒杀成功！！！");
         redisService.set(String.format(SeckillRedisKey.userBuyKey,UserUtils.getUserDetail().getId(),seckillReq.getSkuId()),1,1000);
-        log.info("在Redis中保存用户购买记录");
-        log.info("这里就发送消息去减库存之类的操作");
+
+        ttlThreadPoolExecutor.execute(() ->{
+            Long id = UserUtils.getUserDetail().getId();
+            log.info("在Redis中保存用户[{}]购买记录",id);
+        });
+
+        ttlThreadPoolExecutor.execute(() ->{
+            Long id = UserUtils.getUserDetail().getId();
+            log.info("这里就发送[{}]消息去减库存之类的操作",id);
+        });
+
+
+
         return true;
     }
 
