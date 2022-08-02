@@ -3,7 +3,9 @@ package com.macro.mall.search.service.impl;
 import com.macro.mall.search.dao.EsProductDao;
 import com.macro.mall.search.domain.EsProduct;
 import com.macro.mall.search.domain.EsProductRelatedInfo;
+import com.macro.mall.search.domain.MyEsProduct;
 import com.macro.mall.search.repository.EsProductRepository;
+import com.macro.mall.search.repository.MyEsProductRepository;
 import com.macro.mall.search.service.EsProductService;
 import org.elasticsearch.common.lucene.search.function.FunctionScoreQuery;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -31,7 +33,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
@@ -58,6 +59,8 @@ public class EsProductServiceImpl implements EsProductService {
     private EsProductRepository productRepository;
     @Autowired
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
+    @Autowired
+    private MyEsProductRepository myEsProductRepository;
     @Override
     public int importAll() {
         List<EsProduct> esProductList = productDao.getAllEsProductList(null);
@@ -241,6 +244,20 @@ public class EsProductServiceImpl implements EsProductService {
         NativeSearchQuery searchQuery = builder.build();
         SearchHits<EsProduct> searchHits = elasticsearchRestTemplate.search(searchQuery, EsProduct.class);
         return convertProductRelatedInfo(searchHits);
+    }
+
+    /**
+     * 添加商品信息
+     */
+    @Override
+    public boolean add(MyEsProduct myEsProduct) {
+        myEsProductRepository.save(myEsProduct);
+        return true;
+    }
+
+    @Override
+    public List<MyEsProduct> mySearch(String name, String desc) {
+        return myEsProductRepository.searchByNameOrDesc(name,desc);
     }
 
     /**

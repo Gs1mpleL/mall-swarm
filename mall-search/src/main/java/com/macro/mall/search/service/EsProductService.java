@@ -2,6 +2,7 @@ package com.macro.mall.search.service;
 
 import com.macro.mall.search.domain.EsProduct;
 import com.macro.mall.search.domain.EsProductRelatedInfo;
+import com.macro.mall.search.domain.MyEsProduct;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -50,4 +51,11 @@ public interface EsProductService {
      * 获取搜索词相关品牌、分类、属性
      */
     EsProductRelatedInfo searchRelatedInfo(String keyword);
+
+    boolean add(MyEsProduct myEsProduct);
+
+    /**
+     * 根据名字或者描述分词进行搜索
+     */
+    List<MyEsProduct> mySearch(String name, String desc);
 }
