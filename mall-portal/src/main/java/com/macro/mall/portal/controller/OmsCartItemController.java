@@ -30,7 +30,7 @@ public class OmsCartItemController {
     @ApiOperation("添加商品到购物车")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult add(@RequestBody OmsCartItem cartItem) {
+    public CommonResult add(OmsCartItem cartItem) {
         int count = cartItemService.add(cartItem);
         if (count > 0) {
             return CommonResult.success(count);
