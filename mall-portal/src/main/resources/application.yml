@@ -74,3 +74,8 @@ feign:
         loggerLevel: basic
 redisson:
   address: 'redis://127.0.0.1:6379'
+
+canal-monitor-mysql:
+  hostname: localhost
+  port: 11111
+  tableName: mall.pms_sku_stock

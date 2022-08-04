@@ -2,6 +2,7 @@ package com.macro.mall.portal.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.github.pagehelper.PageHelper;
 import com.macro.mall.mapper.*;
 import com.macro.mall.model.*;
@@ -9,6 +10,7 @@ import com.macro.mall.portal.dao.PortalProductDao;
 import com.macro.mall.portal.domain.PmsPortalProductDetail;
 import com.macro.mall.portal.domain.PmsProductCategoryNode;
 import com.macro.mall.portal.service.PmsPortalProductService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
  * Created by macro on 2020/4/6.
  */
 @Service
+@Slf4j
 public class PmsPortalProductServiceImpl implements PmsPortalProductService {
     @Autowired
     private PmsProductMapper productMapper;
@@ -124,6 +127,28 @@ public class PmsPortalProductServiceImpl implements PmsPortalProductService {
         //商品可用优惠券
         result.setCouponList(portalProductDao.getAvailableCouponList(product.getId(),product.getProductCategoryId()));
         return result;
+    }
+
+
+    @Override
+    public void listenStock(CanalEntry.RowData rowDatas) {
+        // 获取之前的库存
+        String id = rowDatas.getAfterColumns(0).getValue();
+        Integer beforeValue = Integer.parseInt(rowDatas.getBeforeColumns(4).getValue());
+        Integer afterValue = Integer.parseInt(rowDatas.getAfterColumns(4).getValue());
+        // 库存发生变化
+        if (!beforeValue.equals(afterValue) ){
+            if (afterValue < beforeValue){
+                log.info("[{}]的库存减少 [{}] -> [{}]", id, beforeValue, afterValue);
+                // 库存预警 库存少于20件
+                if (afterValue <= 20){
+                    log.info("库存预警，[{}]号商品库存剩余[{}]",id,afterValue);
+                }
+            }else {
+                // 货物补充
+                log.info("[{}]号商品补货[{}]件",id,afterValue-beforeValue);
+            }
+        }
     }
 
 

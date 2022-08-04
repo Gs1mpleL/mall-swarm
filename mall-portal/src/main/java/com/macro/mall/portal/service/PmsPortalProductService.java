@@ -1,5 +1,6 @@
 package com.macro.mall.portal.service;
 
+import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.macro.mall.model.PmsProduct;
 import com.macro.mall.portal.domain.PmsPortalProductDetail;
 import com.macro.mall.portal.domain.PmsProductCategoryNode;
@@ -25,4 +26,10 @@ public interface PmsPortalProductService {
      * 获取前台商品详情
      */
     PmsPortalProductDetail detail(Long id);
+
+
+    /**
+     * 监听库存变化
+     */
+    void listenStock(CanalEntry.RowData rowDatas);
 }
