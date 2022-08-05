@@ -37,7 +37,7 @@ public class CanalUtil {
      * 启动服务
      */
     @Bean
-    @Async("TaskPool")
+    @Async("ttlThreadExecutor")
     public void startMonitorSQL() {
         while (true) {
             CanalConnector connector = CanalConnectors.newSingleConnector(new InetSocketAddress(canalMonitorHost, canalMonitorPort), "example", "", "");
