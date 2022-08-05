@@ -8,6 +8,7 @@
 5. 使用Redis实现用户消费排行榜，支持日榜，月榜，可拓展 
 6. 使用Redis配合切面，拦截器实现注解对方法限流
 7. 实现秒杀业务，考虑接口限流，接口隐藏，分布式超卖，商品预热，下单异步，接口等幂
+8. 实现基于lua脚本的令牌桶限流算法
 
 <p>
   <a href="#公众号"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E5%85%AC%E4%BC%97%E5%8F%B7-macrozheng-blue.svg" alt="公众号"></a>
