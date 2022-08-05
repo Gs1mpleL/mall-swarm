@@ -84,3 +84,15 @@ management: #开启SpringBoot Admin的监控
   endpoint:
     health:
       show-details: always
+
+limit:
+  configs:
+    - type: user
+      replenishRate: 100
+      burstCapacity: 100
+
+    - type: path
+      replenishRate: 1
+      burstCapacity: 1
+
+  choose: path

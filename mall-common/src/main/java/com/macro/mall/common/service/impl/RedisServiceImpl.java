@@ -1,8 +1,6 @@
 package com.macro.mall.common.service.impl;
 
-import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.stream.CollectorUtil;
 import com.macro.mall.common.domain.RedisZSetVo;
 import com.macro.mall.common.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +8,13 @@ import org.springframework.data.redis.connection.BitFieldSubCommands;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.util.CollectionUtils;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -268,6 +269,11 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public void setWithMill(String key, String toJSONString, long expire) {
         redisTemplate.opsForValue().set(key,toJSONString,expire,TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public Object execLua(RedisScript script, List keys, Object... args) {
+        return redisTemplate.execute(script, keys, args);
     }
 
 

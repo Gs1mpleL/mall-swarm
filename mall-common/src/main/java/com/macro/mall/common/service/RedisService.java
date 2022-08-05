@@ -1,6 +1,7 @@
 package com.macro.mall.common.service;
 
 import com.macro.mall.common.domain.RedisZSetVo;
+import org.springframework.data.redis.core.script.RedisScript;
 
 import java.util.List;
 import java.util.Map;
@@ -220,4 +221,9 @@ public interface RedisService {
     List<RedisZSetVo> zGetAllTop(List<String> keys,Long top);
 
     void setWithMill(String key, String toJSONString, long expire);
+
+    /**
+     * 执行lua脚本
+     */
+    Object execLua(RedisScript script,List keys,Object... args);
 }
