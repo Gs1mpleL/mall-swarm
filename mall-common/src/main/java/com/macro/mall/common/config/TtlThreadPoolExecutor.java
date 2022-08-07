@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
  * @date 2022/1/14 2:41 下午
  */
 public class TtlThreadPoolExecutor extends ThreadPoolExecutor {
-    private Field threadLocalsField;
-    private Field tableField;
+    private volatile Field threadLocalsField;
+    private volatile Field tableField;
 
     public TtlThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
