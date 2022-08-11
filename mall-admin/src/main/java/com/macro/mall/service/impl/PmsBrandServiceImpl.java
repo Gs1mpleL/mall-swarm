@@ -1,5 +1,6 @@
 package com.macro.mall.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.macro.mall.dto.PmsBrandParam;
 import com.macro.mall.mapper.PmsBrandMapper;
@@ -13,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import springfox.documentation.annotations.Cacheable;
 
 import java.util.List;
 
@@ -21,13 +23,14 @@ import java.util.List;
  * Created by macro on 2018/4/26.
  */
 @Service
-public class PmsBrandServiceImpl implements PmsBrandService {
+public class PmsBrandServiceImpl extends ServiceImpl<PmsBrandMapper,PmsBrand> implements PmsBrandService {
     @Autowired
     private PmsBrandMapper brandMapper;
     @Autowired
     private PmsProductMapper productMapper;
 
     @Override
+    @Cacheable("brand")
     public List<PmsBrand> listAllBrand() {
         return brandMapper.selectByExample(new PmsBrandExample());
     }

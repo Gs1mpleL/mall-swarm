@@ -10,7 +10,6 @@ import com.macro.mall.portal.domain.CartProduct;
 import com.macro.mall.portal.domain.CartPromotionItem;
 import com.macro.mall.portal.service.OmsCartItemService;
 import com.macro.mall.portal.service.OmsPromotionService;
-import com.macro.mall.portal.service.UmsMemberService;
 import com.macro.mall.portal.util.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +25,8 @@ import java.util.stream.Collectors;
  * 购物车管理Service实现类
  * Created by macro on 2018/8/2.
  */
+//@Primary
+@Service
 public class OmsCartItemServiceImpl implements OmsCartItemService {
     @Autowired
     private OmsCartItemMapper cartItemMapper;

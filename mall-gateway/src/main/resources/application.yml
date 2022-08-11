@@ -95,4 +95,4 @@ limit:
       replenishRate: 1
       burstCapacity: 1
 
-  choose: path
+  choose: null
