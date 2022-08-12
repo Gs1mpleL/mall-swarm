@@ -60,9 +60,7 @@ public class PmsSkuStockServiceImpl implements PmsSkuStockService {
                     log.info("库存预警，[{}]号商品库存剩余[{}],达到告警阈值[{}]",id,afterValue,lowValue);
                 }
                 Set<String> allUserList = webSocket.getAllUserList();
-                for (String s : allUserList) {
-                    webSocket.sendOneMessage(s+"","库存预警，[{"+id+"}]号商品库存剩余[{"+afterValue+"}],达到告警阈值[{"+lowValue+"}]");
-                }
+                webSocket.sendMoreMessage(allUserList,"库存预警，[{"+id+"}]号商品库存剩余[{"+afterValue+"}],达到告警阈值[{"+lowValue+"}]");
             }else {
                 // 货物补充
                 log.info("[{}]号商品补货[{}]件",id,afterValue-beforeValue);

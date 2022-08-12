@@ -23,11 +23,11 @@ public class WebSocket {
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
     //虽然@Component默认是单例模式的，但springboot还是会为每个websocket连接初始化一个bean，所以可以用一个静态set保存起来。
     //  注：底下WebSocket是当前类名
-    private static CopyOnWriteArraySet<WebSocket> webSockets =new CopyOnWriteArraySet<>();
+    private static final CopyOnWriteArraySet<WebSocket> webSockets =new CopyOnWriteArraySet<>();
     // 用来存在线连接数
-    private static Map<String,Session> sessionPool = new HashMap<String,Session>();
+    private static final Map<String,Session> sessionPool = new HashMap<>();
 
-    private static Set<String> userList = new HashSet<>();
+    private static final Set<String> userList = new HashSet<>();
     /**
      * 链接成功调用的方法
      */
@@ -74,7 +74,6 @@ public class WebSocket {
      */
     @OnError
     public void onError(Session session, Throwable error) {
-
         log.error("用户错误,原因:"+error.getMessage());
         error.printStackTrace();
     }
@@ -108,8 +107,8 @@ public class WebSocket {
     }
 
     // 此为单点消息(多人)
-    public void sendMoreMessage(String[] userIds, String message) {
-        for(String userId:userIds) {
+    public void sendMoreMessage(Set<String> userList, String message) {
+        for(String userId:userList) {
             Session session = sessionPool.get(userId);
             if (session != null&&session.isOpen()) {
                 try {
