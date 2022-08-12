@@ -1,6 +1,7 @@
 package com.macro.mall.service.impl;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.macro.mall.component.WebSocket;
 import com.macro.mall.dao.PmsSkuStockDao;
 import com.macro.mall.mapper.PmsSkuStockMapper;
 import com.macro.mall.model.PmsSkuStock;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 商品sku库存管理Service实现类
@@ -20,6 +22,8 @@ import java.util.List;
 @Service
 @Slf4j
 public class PmsSkuStockServiceImpl implements PmsSkuStockService {
+    @Autowired
+    private WebSocket webSocket;
     @Autowired
     private PmsSkuStockMapper skuStockMapper;
     @Autowired
@@ -54,6 +58,10 @@ public class PmsSkuStockServiceImpl implements PmsSkuStockService {
                 // 库存预警 库存少于20件
                 if (afterValue <= lowValue){
                     log.info("库存预警，[{}]号商品库存剩余[{}],达到告警阈值[{}]",id,afterValue,lowValue);
+                }
+                Set<String> allUserList = webSocket.getAllUserList();
+                for (String s : allUserList) {
+                    webSocket.sendOneMessage(s+"","库存预警，[{"+id+"}]号商品库存剩余[{"+afterValue+"}],达到告警阈值[{"+lowValue+"}]");
                 }
             }else {
                 // 货物补充
