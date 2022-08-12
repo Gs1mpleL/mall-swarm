@@ -77,11 +77,7 @@ feign:
 redisson:
   address: 'redis://127.0.0.1:6379'
 
-# canal旧版需要
-canal-monitor-mysql:
-  hostname: localhost
-  port: 11111
-  tableName: mall.pms_sku_stock
+
 
 
 # canal starter版本 不能用

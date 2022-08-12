@@ -1,10 +1,10 @@
-package com.macro.mall.portal.component;
+package com.macro.mall.component;
 
 import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalConnectors;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.Message;
-import com.macro.mall.portal.service.PmsPortalProductService;
+import com.macro.mall.service.PmsSkuStockService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class CanalUtil {
+public class CanalListener {
 
     @Value("${canal-monitor-mysql.hostname}")
     String canalMonitorHost;
@@ -31,7 +31,7 @@ public class CanalUtil {
     private final static int BATCH_SIZE = 10000;
 
     @Autowired
-    private PmsPortalProductService productService;
+    private PmsSkuStockService skuStockService;
 
     /**
      * 启动服务
@@ -97,7 +97,7 @@ public class CanalUtil {
                 log.info("Canal监测到更新:[{}] [{}]", entry.getHeader().getTableName(),eventType);
                 // 获取之前之后数据集合
                 CanalEntry.RowData rowDatas = rowChange.getRowDatas(0);
-                productService.listenStock(rowDatas);
+                skuStockService.listenStock(rowDatas);
             }
         }
     }

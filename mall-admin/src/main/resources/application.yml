@@ -76,3 +76,9 @@ feign:
         connectTimeout: 5000
         readTimeout: 5000
         loggerLevel: basic
+
+# canal旧版需要
+canal-monitor-mysql:
+  hostname: localhost
+  port: 11111
+  tableName: mall.pms_sku_stock

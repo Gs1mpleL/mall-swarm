@@ -1,5 +1,6 @@
 package com.macro.mall.service;
 
+import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.macro.mall.model.PmsSkuStock;
 
 import java.util.List;
@@ -18,4 +19,6 @@ public interface PmsSkuStockService {
      * 批量更新商品库存信息
      */
     int update(Long pid, List<PmsSkuStock> skuStockList);
+
+    void listenStock(CanalEntry.RowData rowDatas);
 }
