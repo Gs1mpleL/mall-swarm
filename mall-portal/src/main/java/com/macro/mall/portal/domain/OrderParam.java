@@ -25,4 +25,6 @@ public class OrderParam {
     private List<Long> cartIds;
     @ApiModelProperty("页面生成的唯一Token")
     private String token;
+    @ApiModelProperty("是否为秒杀消息")
+    private boolean isSeckill;
 }

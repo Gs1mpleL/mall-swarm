@@ -1,5 +1,6 @@
 package com.macro.mall.portal.service.impl;
 
+import cn.hutool.core.util.BooleanUtil;
 import com.alibaba.fastjson2.JSON;
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.exception.Asserts;
@@ -54,9 +55,17 @@ public class MyOrderServiceImpl implements OmsPortalOrderService {
 
     @Override
     public OmsOrder generateOrder(OrderParam orderParam) {
-        if (!redisService.setIfAbs(String.format(tokenKey, UserUtils.getUserDetail().getId(),orderParam.getToken()),1,10*60L)) {
+        if (BooleanUtil.isFalse(orderParam.isSeckill()) && !redisService.setIfAbs(String.format(tokenKey, UserUtils.getUserDetail().getId(),orderParam.getToken()),1,10*60L)) {
             Asserts.fail("下单中,请勿重复提交订单");
         }
+
+        if (BooleanUtil.isTrue(orderParam.isSeckill())){
+            log.info("秒杀消息生成订单!");
+            log.info("生成一个订单......");
+            return new OmsOrder();
+        }
+
+
         Map<Object, Object> objectObjectMap = redisService.hGetAll(String.format(cartStr, UserUtils.getUserDetail().getId()));
 
         if (CollectionUtils.isEmpty(objectObjectMap.values())) {
