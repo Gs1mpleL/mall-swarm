@@ -12,6 +12,7 @@
 
 ## 一些流程图
 <img width="280" alt="截屏2022-08-20 20 27 15" src="https://user-images.githubusercontent.com/83215491/185746266-f031aab4-3800-49b1-8e1a-4ba4b1e4c77b.png">
+<img width="448" alt="截屏2022-08-20 23 34 37" src="https://user-images.githubusercontent.com/83215491/185754858-d7ff7484-853c-4af7-bb9a-fccf1cb70487.png">
 
 <p>
   <a href="#公众号"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E5%85%AC%E4%BC%97%E5%8F%B7-macrozheng-blue.svg" alt="公众号"></a>
