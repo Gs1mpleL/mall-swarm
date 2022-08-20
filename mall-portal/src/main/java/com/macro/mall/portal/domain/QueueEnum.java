@@ -9,6 +9,11 @@ import lombok.Getter;
 @Getter
 public enum QueueEnum {
     /**
+     * 秒杀消息队列
+     */
+    SECKILL_SUCCESS("mall.seckill.direct","mall.seckill.success","mall.seckill.success"),
+
+    /**
      * 消息通知队列
      */
     QUEUE_ORDER_CANCEL("mall.order.direct", "mall.order.cancel", "mall.order.cancel"),

@@ -24,6 +24,25 @@ public class RabbitMqConfig {
     }
 
     /**
+     * 秒杀交换机
+     */
+    @Bean
+    DirectExchange seckillExchange(){
+        return ExchangeBuilder
+                .directExchange(QueueEnum.SECKILL_SUCCESS.getExchange())
+                .durable(true)
+                .build();
+    }
+
+    /**
+     * 秒杀成功队列
+     */
+    @Bean
+    public Queue seckillQueue(){
+        return new Queue(QueueEnum.SECKILL_SUCCESS.getName());
+    }
+
+    /**
      * 订单延迟队列队列所绑定的交换机
      */
     @Bean
@@ -32,6 +51,17 @@ public class RabbitMqConfig {
                 .directExchange(QueueEnum.QUEUE_TTL_ORDER_CANCEL.getExchange())
                 .durable(true)
                 .build();
+    }
+
+    /**
+     * 秒杀交换机与秒杀队列绑定
+     */
+    @Bean
+    public Binding seckillBinding(){
+        return BindingBuilder
+                .bind(seckillQueue())
+                .to(seckillExchange())
+                .with(QueueEnum.SECKILL_SUCCESS.getRouteKey());
     }
 
     /**

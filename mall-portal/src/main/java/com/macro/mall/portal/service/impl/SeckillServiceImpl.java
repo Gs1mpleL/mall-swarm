@@ -7,6 +7,8 @@ import com.macro.mall.common.exception.ApiException;
 import com.macro.mall.common.service.RedisService;
 import com.macro.mall.mapper.PmsSkuStockMapper;
 import com.macro.mall.model.PmsSkuStock;
+import com.macro.mall.portal.component.SeckillSuccessSender;
+import com.macro.mall.portal.domain.SeckillMsg;
 import com.macro.mall.portal.domain.SeckillRedisKey;
 import com.macro.mall.portal.domain.SeckillReq;
 import com.macro.mall.portal.domain.SeckillSession;
@@ -36,6 +38,9 @@ public class SeckillServiceImpl implements SeckillService {
     @Autowired
     private PmsSkuStockMapper skuStockMapper;
 
+    @Autowired
+    private SeckillSuccessSender seckillSuccessSender;
+
     @Override
     public boolean preHeat(SeckillSession seckillSession) {
         String key = String.format(SeckillRedisKey.sessionKey,seckillSession.getSkuId());
@@ -56,7 +61,7 @@ public class SeckillServiceImpl implements SeckillService {
             throw new ApiException("该商品没有库存哦");
         }
         int stock = pmsSkuStock.getStock() - pmsSkuStock.getLockStock();
-        log.info("预热商品到Redis");
+        log.info("预热商品全部库存[{}]到Redis",stock);
         RSemaphore semaphore = redissonClient.getSemaphore(String.format(SeckillRedisKey.lockKey, seckillSession.getSkuId()));
         try {
             semaphore.trySetPermits(stock);
@@ -95,16 +100,16 @@ public class SeckillServiceImpl implements SeckillService {
         }
         redisService.del(String.format(SeckillRedisKey.lingpaiKey, UserUtils.getUserDetail().getId(), seckillReq.getSkuId()));
         log.info("秒杀请求正常，删除Redis令牌");
-        if (redisService.get(String.format(SeckillRedisKey.userBuyKey,UserUtils.getUserDetail().getId(),seckillReq.getSkuId())) != null){
-            throw new ApiException("本场秒杀已经参与过了哦");
-        }
+//        if (redisService.get(String.format(SeckillRedisKey.userBuyKey,UserUtils.getUserDetail().getId(),seckillReq.getSkuId())) != null){
+//            throw new ApiException("本场秒杀已经参与过了哦");
+//        }
         RSemaphore semaphore = redissonClient.getSemaphore(String.format(SeckillRedisKey.lockKey, seckillReq.getSkuId()));
         if (!semaphore.tryAcquire(1)) {
             throw new ApiException("秒杀失败哦,无货了捏");
         }
         log.info("秒杀成功！！！");
         redisService.set(String.format(SeckillRedisKey.userBuyKey,UserUtils.getUserDetail().getId(),seckillReq.getSkuId()),1,1000);
-
+        log.info("Redis存储用户购买记录");
         ttlThreadPoolExecutor.execute(() ->{
             Long id = UserUtils.getUserDetail().getId();
             log.info("在Redis中保存用户[{}]购买记录",id);
@@ -113,6 +118,7 @@ public class SeckillServiceImpl implements SeckillService {
         ttlThreadPoolExecutor.execute(() ->{
             Long id = UserUtils.getUserDetail().getId();
             log.info("这里就发送[{}]消息去减库存之类的操作",id);
+            seckillSuccessSender.sendSuccessMsg(new SeckillMsg(UserUtils.getUserDetail().getId(),seckillReq.getSkuId()));
         });
 
 

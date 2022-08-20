@@ -34,6 +34,8 @@ spring:
     virtual-host: /mall
     username: guest
     password: guest
+    # ACK确认消息发送到了Exchange
+    publisher-confirm-type: correlated
 mybatis:
   mapper-locations:
     - classpath:dao/*.xml
