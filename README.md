@@ -11,7 +11,8 @@
 8. 实现基于lua脚本的令牌桶限流算法，支持接口模式与ip模式
 
 ## 一些流程图
-![添加商品](../../../Desktop/截屏2022-08-20 20.27.15.png)
+<img width="280" alt="截屏2022-08-20 20 27 15" src="https://user-images.githubusercontent.com/83215491/185746266-f031aab4-3800-49b1-8e1a-4ba4b1e4c77b.png">
+
 <p>
   <a href="#公众号"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E5%85%AC%E4%BC%97%E5%8F%B7-macrozheng-blue.svg" alt="公众号"></a>
   <a href="#公众号"><img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/badge/%E4%BA%A4%E6%B5%81-%E5%BE%AE%E4%BF%A1%E7%BE%A4-2BA245.svg" alt="交流"></a>
