@@ -1,6 +1,7 @@
 package com.macro.mall.filter;
 
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSON;
 import com.macro.mall.common.constant.AuthConstant;
 import com.nimbusds.jose.JWSObject;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        log.info("AuthGlobalFilter拦截开始");
+        log.info("登陆校验触发");
         String token = exchange.getRequest().getHeaders().getFirst(AuthConstant.JWT_TOKEN_HEADER);
         log.info("请求携带的token->[{}]",token);
         if (StrUtil.isEmpty(token)) {
@@ -39,6 +40,9 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             String realToken = token.replace(AuthConstant.JWT_TOKEN_PREFIX, "");
             JWSObject jwsObject = JWSObject.parse(realToken);
             String userStr = jwsObject.getPayload().toString();
+            Long exp = Long.valueOf((Integer)JSON.parseObject(userStr).get("exp"));
+            long l = System.currentTimeMillis();
+            log.info("Token剩余时间[{}]",l-exp);
             LOGGER.info("AuthGlobalFilter.filter() user:{}",userStr);
             ServerHttpRequest request = exchange.getRequest().mutate().header(AuthConstant.USER_TOKEN_HEADER, userStr).build();
             exchange = exchange.mutate().request(request).build();

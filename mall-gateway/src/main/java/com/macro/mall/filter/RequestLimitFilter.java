@@ -37,6 +37,7 @@ public class RequestLimitFilter implements GlobalFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        log.info("限流触发");
         String limitChoose = limitConfig.getChoose();
         if (map.get(limitChoose) == null) {
             log.info("无限流规则");
@@ -44,12 +45,12 @@ public class RequestLimitFilter implements GlobalFilter {
         }
         LimitConfig.LimitConfiguration limitConfiguration = map.get(limitChoose);
         String tokenKey = "limit:token:" + limitConfiguration.getType() + exchange.getRequest().getPath();
-        String stampKey = "limit:stampKey:" + limitConfiguration.getType()+ exchange.getRequest().getPath();
+        String stampKey = "limit:stampKey:" + limitConfiguration.getType() + exchange.getRequest().getPath();
         boolean allowed = redisLimiter.isAllowed(tokenKey, stampKey, limitConfiguration.getReplenishRate(), limitConfiguration.getBurstCapacity(), 1);
-        if (!allowed){
+        if (!allowed) {
             exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
             throw new ApiException("限流....");
-        }else {
+        } else {
             return chain.filter(exchange);
         }
 

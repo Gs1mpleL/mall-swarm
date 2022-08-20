@@ -25,8 +25,10 @@ import java.util.List;
 public class IgnoreUrlsRemoveJwtFilter implements WebFilter {
     @Autowired
     private IgnoreUrlsConfig ignoreUrlsConfig;
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        log.info("白名单触发");
         ServerHttpRequest request = exchange.getRequest();
         logRequest(request);
         URI uri = request.getURI();
@@ -44,15 +46,15 @@ public class IgnoreUrlsRemoveJwtFilter implements WebFilter {
     }
 
     private void logRequest(ServerHttpRequest request){
-        log.info("--------------------------------------------------------------------------------------");
-        log.info("请求进入");
-        log.info("请求地址 [{}]",request.getRemoteAddress());
+//        log.info("--------------------------------------------------------------------------------------");
+//        log.info("请求进入");
+//        log.info("请求地址 [{}]",request.getRemoteAddress());
         log.info("请求地址 [{}]",request.getPath());
-        log.info("请求方式 [{}]",request.getMethod());
-        request.getHeaders().forEach((k,v)->{
-        log.info("Header  {}:{}",k,v);
-        });
-        log.info("--------------------------------------------------------------------------------------");
+//        log.info("请求方式 [{}]",request.getMethod());
+//        request.getHeaders().forEach((k,v)->{
+//        log.info("Header  {}:{}",k,v);
+//        });
+//        log.info("--------------------------------------------------------------------------------------");
     }
 
 

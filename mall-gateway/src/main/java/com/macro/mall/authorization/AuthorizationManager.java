@@ -44,6 +44,7 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
 
     @Override
     public Mono<AuthorizationDecision> check(Mono<Authentication> mono, AuthorizationContext authorizationContext) {
+        log.info("Manager触发");
         ServerHttpRequest request = authorizationContext.getExchange().getRequest();
         URI uri = request.getURI();
         PathMatcher pathMatcher = new AntPathMatcher();
@@ -55,20 +56,20 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
             }
         }
         //对应跨域的预检请求直接放行
-        if(request.getMethod()==HttpMethod.OPTIONS){
+        if (request.getMethod() == HttpMethod.OPTIONS) {
             return Mono.just(new AuthorizationDecision(true));
         }
         //不同用户体系登录不允许互相访问
         try {
             String token = request.getHeaders().getFirst(AuthConstant.JWT_TOKEN_HEADER);
-            if(StrUtil.isEmpty(token)){
+            if (StrUtil.isEmpty(token)) {
                 return Mono.just(new AuthorizationDecision(false));
             }
             String realToken = token.replace(AuthConstant.JWT_TOKEN_PREFIX, "");
             JWSObject jwsObject = JWSObject.parse(realToken);
             String userStr = jwsObject.getPayload().toString();
             UserDto userDto = JSONUtil.toBean(userStr, UserDto.class);
-            log.info("从token中解析出用户信息->[{}]",userDto);
+            log.info("从token中解析出用户信息->[{}]", userDto);
             if (AuthConstant.ADMIN_CLIENT_ID.equals(userDto.getClientId()) && !pathMatcher.match(AuthConstant.ADMIN_URL_PATTERN, uri.getPath())) {
                 return Mono.just(new AuthorizationDecision(false));
             }
