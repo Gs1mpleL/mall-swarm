@@ -9,7 +9,7 @@
 6. 使用Redis配合切面，拦截器实现注解对方法限流
 7. 实现秒杀业务，考虑接口限流，接口隐藏，分布式超卖，商品预热，下单异步，接口等幂
 8. 实现基于lua脚本的令牌桶限流算法，支持接口模式与ip模式
-
+ 
 ## 一些流程图
 <img width="280" alt="截屏2022-08-20 20 27 15" src="https://user-images.githubusercontent.com/83215491/185746266-f031aab4-3800-49b1-8e1a-4ba4b1e4c77b.png">
 <img width="448" alt="截屏2022-08-20 23 34 37" src="https://user-images.githubusercontent.com/83215491/185754858-d7ff7484-853c-4af7-bb9a-fccf1cb70487.png">
