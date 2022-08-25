@@ -14,7 +14,6 @@ import com.macro.mall.portal.util.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,7 +60,7 @@ public class OmsCartItemServiceImpl implements OmsCartItemService {
         OmsCartItemExample example = new OmsCartItemExample();
         OmsCartItemExample.Criteria criteria = example.createCriteria().andMemberIdEqualTo(cartItem.getMemberId())
                 .andProductIdEqualTo(cartItem.getProductId()).andDeleteStatusEqualTo(0);
-        if (!StringUtils.isEmpty(cartItem.getProductSkuId())) {
+        if (cartItem.getProductSkuId()!=null) {
             criteria.andProductSkuIdEqualTo(cartItem.getProductSkuId());
         }
         List<OmsCartItem> cartItemList = cartItemMapper.selectByExample(example);
